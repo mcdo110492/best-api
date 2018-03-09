@@ -178,7 +178,7 @@ class UserClientsController extends Controller
 
     public function sendMail(){
 
-       $mail = Mail::to("fuentebellamcdonald@gmail.com")->send(new AccountConfirmation());
+       $mail = Mail::to("mcdonalclintonfuentebella@gmail.com")->send(new AccountConfirmation());
 
         return response()->json(['status' => 200, 'mail' => $mail]);
 
