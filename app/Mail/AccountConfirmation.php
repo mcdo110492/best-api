@@ -11,14 +11,16 @@ class AccountConfirmation extends Mailable
 {
     use Queueable, SerializesModels;
 
+    public $token;
+
     /**
      * Create a new message instance.
      *
      * @return void
      */
-    public function __construct()
+    public function __construct($token)
     {
-        //
+        $this->token = $token;
     }
 
     /**

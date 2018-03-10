@@ -21,9 +21,9 @@ Route::post("authenticate/admin","UserAdminsController@authenticate");
 //Route Authenticate Clients
 Route::post("authenticate/client","UserClientsController@authenticate");
 
+
 Route::post("register","UserClientsController@register");
 
-Route::get("verifyAccount","UserClientsController@verifyActivation");
+Route::get("verify/account","UserClientsController@verifyActivation");
 
-
-Route::get("sendMail","UserClientsController@sendMail");
+Route::get("activation/resend","UserClientsController@resendActivation");

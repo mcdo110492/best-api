@@ -5,7 +5,7 @@
         <meta http-equiv="X-UA-Compatible" content="IE=edge">
         <meta name="viewport" content="width=device-width, initial-scale=1">
 
-        <title>BEST Account Activation</title>
+        <title>Account Activation Resend</title>
 
         <!-- Fonts -->
         <link href="https://fonts.googleapis.com/css?family=Raleway:100,600" rel="stylesheet" type="text/css">
@@ -69,12 +69,18 @@
 
             <div class="content">
                 <div class="title m-b-md">
-                    <img src="https://best.staticscript.com/api/storage/app/public/best-logo.png" alt="">
+                    <img src="{{ asset('storage/best-logo.png') }}" alt="">
                 </div>
 
                 <div class="links">
-                    <h1>Welcome to Basic Environmental Systems & Technologies Inc.</h1>
-                    <p>To activate your account please <a href="http://127.0.0.1:8000/verify/account?token={{ $token }}">Click Here to Activate your account</a>. This link will expires after 24 hours. Thank you </p>
+
+                    @if ($status == 200)
+                    <h1>{{ $message }}</h1>
+                    @elseif ($status == 403)
+                    <h1>{{ $message }}</h1>
+                    @elseif ($status == 404)
+                    <h1>{{ $message }}</h1>
+                    @endif
                 </div>
             </div>
         </div>

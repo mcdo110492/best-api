@@ -115,23 +115,20 @@ class UserClientsController extends Controller
     
             $exp = Carbon::now()->addDay();
     
-            $claims = [
-                "email" => $credentials['email'],
-                "id"    => $id,
-                "hash"  => str_random(30)
-            ];
-            
-            $this->token =  encrypt($claims);
+
+            $createActivationCode = $this->createActivationCode($credentials['email'],$id);
     
-            $data = ['clientId' => $id, 'token' => $claims['hash'], 'expiredAt' => $exp, 'isConfirm' => 0];
+            $data = ['clientId' => $id, 'token' => $createActivationCode, 'expiredAt' => $exp, 'isConfirm' => 0];
     
             UserClientConfirmation::create($data);
+
             
         });
 
+        $this->sendMail($credentials['email'],$this->token);
     
         
-        return response()->json(['status' => 200, 'message' => "Register Successfully.", 'token' => $this->token]);
+        return response()->json(['status' => 200, 'message' => "Register Successfully.", 'token']);
 
     }
 
@@ -151,36 +148,99 @@ class UserClientsController extends Controller
 
             if(!$expired){
 
-                if($getData->token === $hash){
+                $checkIsAlreadyActivated = DB::table($table)->where(['confirmId' => $getData->confirmId, 'isConfirm' => 1])->count();
 
-                    DB::transaction(function () use ($table,$getData) {
-                        
-                        DB::table($table)->where(['confirmId' => $getData->confirmId])->update(['isConfirm' => 1]);
-                        DB::table('userClients')->where(['clientId' => $getData->clientId])->update(['status' => 1]);
+                if($checkIsAlreadyActivated == 0){
 
-                    });
-                    
-                    return response()->json(["status" => 200, "message" => "Account is activated."]);
+                    if($getData->token === $hash){
+
+                        DB::transaction(function () use ($table,$getData) {
+                            
+                            DB::table($table)->where(['confirmId' => $getData->confirmId])->update(['isConfirm' => 1]);
+                            DB::table('userClients')->where(['clientId' => $getData->clientId])->update(['status' => 1]);
+
+                        });
+
+                        return view('account-confirmation',['status' => 200, 'message' => "You' re account has been successfully activated.", 'id' => $id]);
+                       
+                    }
                 }
+
+                return view('account-confirmation',['status' => 402, 'message' => "Sorry. This activation code is expired" ]);
 
             }
 
-
-            return response()->json(['status' => 403, 'message' => "Expired."]);
+            return view('account-confirmation',['status' => 401, 'message' => "Sorry. This activation code is expired"]);
+            
             
 
         } catch (DecryptException $e) {
             
-            return response()->json(['status' => 403, "message" => "Token has been tampered."]);
+            return view('account-confirmation',['status' => 402, 'message' => "Sorry. This activation code is invalid"]);
         }
     }
 
 
-    public function sendMail(){
 
-       $mail = Mail::to("fuentebellamcdonald@gmail.com")->send(new AccountConfirmation());
+    public function resendActivation(Request $request){
 
-        return response()->json(['status' => 200, 'mail' => $mail]);
+        $credentials = $request->validate([
+            'id'    =>  'required'
+        ]);
+
+        $id = $credentials['id'];
+    
+        $checkIdifExist = DB::table("userClients")->where(['clientId' => $id])->count();
+
+        if($checkIdifExist > 0){
+            
+            $checkifAlreadyConfirm = DB::table('userClientConfirmation')->where(['clientId' => $id, 'isConfirm' => 1])->count();
+
+            if($checkifAlreadyConfirm == 0){
+
+                $getUser = DB::table("userClients")->where(['clientId' => $id])->get()->first();
+
+                $createActivationCode = $this->createActivationCode($getUser->email,$id);
+
+                DB::table('userClientConfirmation')->where(['clientId' => $id])->update(['token' => $createActivationCode]);
+
+                $this->sendMail($getUser->email,$this->token);
+
+                $response = ['status' => 200, 'message' => "Activation Code has been sent to your email. Please wait for few minutes. Sometimes it will take a while to receive the email. Thank You"];
+
+                return view('confirmation-resend',$response);
+
+            }
+            
+            $response = ['status' => 403, 'message' => "Account already activated."];
+
+            return view('confirmation-resend',$response);
+        }
+
+        $response = ['status' => 404, "message" => "404 not found. The page you' re looking for cannot be found."];
+
+        return view('confirmation-resend',$response);
+
+    }
+
+    public function sendMail($email,$token){
+
+        $mail = Mail::to($email)->send(new AccountConfirmation($token));
+ 
+ 
+    }
+
+    public function createActivationCode($email, $id){
+
+        $claims = [
+            'email' =>  $email,
+            'id'    =>  $id,
+            "hash"  =>  str_random()
+        ];
+
+        $this->token = encrypt($claims);
+
+        return $claims['hash'];
 
     }
 
