@@ -4,14 +4,14 @@ namespace App;
 
 use Illuminate\Database\Eloquent\Model;
 
-class UserClientValidId extends Model
+class UserValidId extends Model
 {
-    protected $table = "userClientValidID";
+    protected $table = "userValidID";
 
     protected $primaryKey = "validId";
 
     protected $fillable = [
-        "clientId",
+        "userId",
         "validIdPath"
     ];
 }

@@ -76,6 +76,8 @@
 
                     @if ($status == 200)
                     <h1>{{ $message }}</h1>
+                    @elseif ($status == 404)
+                    <h1>{{ $message }}</h1>
                     @elseif ($status == 403)
                     <h1>{{ $message }}</h1>
                     @elseif ($status == 402)

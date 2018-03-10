@@ -15,11 +15,10 @@ class CreateInquiryTable extends Migration
     {
         Schema::create('inquiry', function (Blueprint $table) {
             $table->increments('inquiryId');
-            $table->string('clientNumber',20);
-            $table->unsignedInteger("clientId");
+            $table->unsignedInteger("userId");
             $table->smallInteger("status")->default(0);
             $table->timestamp("dateConfirmed");
-            $table->unsignedInteger("adminId");
+            $table->unsignedInteger("adminId")->nullable();
             $table->string('remarks',150)->nullable();
             $table->timestamps();
         });

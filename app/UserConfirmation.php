@@ -4,14 +4,14 @@ namespace App;
 
 use Illuminate\Database\Eloquent\Model;
 
-class UserClientConfirmation extends Model
+class UserConfirmation extends Model
 {
-    protected $table = "userClientConfirmation";
+    protected $table = "userConfirmation";
 
     protected $primaryKey = "confirmId";
 
     protected $fillable =[
-        "clientId",
+        "userId",
         "token",
         "isConfirm",
         "expiredAt"

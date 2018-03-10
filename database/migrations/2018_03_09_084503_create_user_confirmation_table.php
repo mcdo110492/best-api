@@ -4,7 +4,7 @@ use Illuminate\Support\Facades\Schema;
 use Illuminate\Database\Schema\Blueprint;
 use Illuminate\Database\Migrations\Migration;
 
-class CreateUserClientConfirmationTable extends Migration
+class CreateUserConfirmationTable extends Migration
 {
     /**
      * Run the migrations.
@@ -13,9 +13,9 @@ class CreateUserClientConfirmationTable extends Migration
      */
     public function up()
     {
-        Schema::create('userClientConfirmation', function (Blueprint $table) {
+        Schema::create('userConfirmation', function (Blueprint $table) {
             $table->increments('confirmId');
-            $table->unsignedInteger("clientId");
+            $table->unsignedInteger("userId");
             $table->string('token',200);
             $table->smallInteger("isConfirm")->dafault(0);
             $table->timestamp("expiredAt");
@@ -30,6 +30,6 @@ class CreateUserClientConfirmationTable extends Migration
      */
     public function down()
     {
-        Schema::dropIfExists('userClientConfirmation');
+        Schema::dropIfExists('userConfirmation');
     }
 }

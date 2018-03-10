@@ -11,11 +11,17 @@ class Inquiry extends Model
     protected $primaryKey = "inquiryId";
 
     protected $fillable = [
-        "clientNumber",
-        "clientId",
+        "userId",
         "status",
         "dateConfirmed",
         "adminId",
         "remarks"
     ];
+
+
+    public function getInquiryIdAttribute($value){
+
+        $zeroFill = 0000000000;
+        return ($zeroFill + $value);
+    }
 }

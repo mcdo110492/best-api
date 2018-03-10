@@ -4,14 +4,14 @@ namespace App;
 
 use Illuminate\Database\Eloquent\Model;
 
-class UserClientAddress extends Model
+class UserAddress extends Model
 {
-    protected $table = "userClientAddress";
+    protected $table = "userAddress";
 
     protected $primaryKey = "addressId";
 
     protected $fillable = [
-        "clientId",
+        "userId",
         "street",
         "city",
         "province"

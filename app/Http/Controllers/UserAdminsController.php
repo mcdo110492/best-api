@@ -6,7 +6,7 @@ use Illuminate\Http\Request;
 use Illuminate\Support\Facades\DB;
 use Illuminate\Support\Facades\Hash;
 
-use App\UserAdmins;
+use App\User;
 
 use JWTAuth;
 use JWTFactory;
@@ -25,7 +25,7 @@ class UserAdminsController extends Controller
 
         $where = ['email'   =>  $credentials['email']];
 
-        $table = "userAdmins";
+        $table = "users";
         
         
         
@@ -43,6 +43,14 @@ class UserAdminsController extends Controller
 
                     $getUser = DB::table($table)->where($where)->get()->first();
 
+                    //Check Role only role with 1 and 2
+                    $role = $getUser->role;
+                    if($role == 3){
+
+                        return response()->json(['status' => 403, "message" => "You' re not authorized."]);
+
+                    }
+
                     $hashPassword = $getUser->password;
                     $userPassword = $credentials['password'];
 
@@ -51,14 +59,15 @@ class UserAdminsController extends Controller
 
                         $userData = [
                             'fullName'          =>  $getUser->fullName,
-                            'id'                =>  $getUser->adminId,
+                            'userId'            =>  $getUser->userId,
                             "email"             =>  $getUser->email,
                             "role"              =>  $getUser->role,
                             "refreshToken"      =>  $getUser->refreshToken,
-                            "profilePicture"    =>  $getUser->profilePicture
+                            "profilePicture"    =>  $getUser->profilePicture,
+                            "contactNumber"     =>  $getUser->contactNumber
                         ];
 
-                        $customClaims = ['userId' => $getUser->adminId, 'role' => $getUser->role, 'email' => $getUser->email];
+                        $customClaims = ['userId' => $getUser->userId, 'role' => $getUser->role, 'email' => $getUser->email];
 
                         $user = (object) $userData;
 

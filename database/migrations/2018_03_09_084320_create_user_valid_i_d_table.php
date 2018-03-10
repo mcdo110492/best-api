@@ -4,7 +4,7 @@ use Illuminate\Support\Facades\Schema;
 use Illuminate\Database\Schema\Blueprint;
 use Illuminate\Database\Migrations\Migration;
 
-class CreateUserClientAddressTable extends Migration
+class CreateUserValidIDTable extends Migration
 {
     /**
      * Run the migrations.
@@ -13,12 +13,10 @@ class CreateUserClientAddressTable extends Migration
      */
     public function up()
     {
-        Schema::create('userClientAddress', function (Blueprint $table) {
-            $table->increments('addressId');
-            $table->unsignedInteger("clientId");
-            $table->string('street',50);
-            $table->string('city',50);
-            $table->string('province',50);
+        Schema::create('userValidID', function (Blueprint $table) {
+            $table->increments('validId');
+            $table->unsignedInteger("userId");
+            $table->string('validIdPath',200)->dafault("default.jpg");
             $table->timestamps();
         });
     }
@@ -30,6 +28,6 @@ class CreateUserClientAddressTable extends Migration
      */
     public function down()
     {
-        Schema::dropIfExists('userClientAddress');
+        Schema::dropIfExists('userValidID');
     }
 }

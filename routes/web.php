@@ -27,3 +27,6 @@ Route::post("register","UserClientsController@register");
 Route::get("verify/account","UserClientsController@verifyActivation");
 
 Route::get("activation/resend","UserClientsController@resendActivation");
+
+
+Route::post("inquire","InquiryController@inquire");

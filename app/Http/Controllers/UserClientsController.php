@@ -6,12 +6,11 @@ use Illuminate\Http\Request;
 use Illuminate\Support\Facades\DB;
 use Illuminate\Support\Facades\Hash;
 use Illuminate\Contracts\Encryption\DecryptException;
-
-use App\Mail\AccountConfirmation;
 use Illuminate\Support\Facades\Mail;
 
-use App\UserClients;
-use App\UserClientConfirmation;
+use App\Mail\AccountConfirmation;
+use App\User;
+use App\UserConfirmation;
 
 use JWTAuth;
 use Carbon\Carbon;
@@ -25,7 +24,7 @@ class UserClientsController extends Controller
 
     public function __construct(){
 
-        $this->table = "userClients";
+        $this->table = "users";
 
     }
     
@@ -58,15 +57,16 @@ class UserClientsController extends Controller
 
                         $userData = [
                             'fullName'          =>  $getUser->fullName,
-                            'id'                =>  $getUser->clientId,
+                            'userId'            =>  $getUser->userId,
                             "email"             =>  $getUser->email,
                             "refreshToken"      =>  $getUser->refreshToken,
-                            "profilePicture"    =>  $getUser->profilePicture
+                            "profilePicture"    =>  $getUser->profilePicture,
+                            "contactNumber"     =>  $getUser->contactNumber
                         ];
                     
                         $user = (object) $userData;
 
-                        $customClaims = ['userId' => $getUser->clientId, 'role' => 3, 'email' => $getUser->email];
+                        $customClaims = ['userId' => $getUser->userId, 'role' => 3, 'email' => $getUser->email];
 
                         $token = JWTAuth::fromUser($user,$customClaims);
 
@@ -108,19 +108,27 @@ class UserClientsController extends Controller
 
         DB::transaction(function () use ($table,$credentials) {
 
-            $create = UserClients::create($credentials);
+            $registerData = [
+                'email'         =>  $credentials['email'],
+                'password'      =>  Hash::make($credentials['password']),
+                'fullName'      =>  $credentials['fullName'],
+                'contactNumber' =>  $credentials['contactNumber'],
+                'role'          =>  3
+            ];
+
+            $create = User::create($registerData);
 
         
-            $id = $create->clientId;
+            $id = $create->userId;
     
             $exp = Carbon::now()->addDay();
     
 
             $createActivationCode = $this->createActivationCode($credentials['email'],$id);
     
-            $data = ['clientId' => $id, 'token' => $createActivationCode, 'expiredAt' => $exp, 'isConfirm' => 0];
+            $data = ['userId' => $id, 'token' => $createActivationCode, 'expiredAt' => $exp, 'isConfirm' => 0];
     
-            UserClientConfirmation::create($data);
+            UserConfirmation::create($data);
 
             
         });
@@ -134,7 +142,7 @@ class UserClientsController extends Controller
 
     public function verifyActivation(Request $request){
         $token = $request['token'];
-        $table = "userClientConfirmation";
+        $table = "userConfirmation";
 
         try {
             $decrypted = decrypt($token);
@@ -142,7 +150,13 @@ class UserClientsController extends Controller
             $id     = $decrypted['id'];
             $hash   = $decrypted['hash'];
 
-            $getData = DB::table($table)->where(['clientId' => $id])->get()->first();
+            $checkifClientExists = DB::table($table)->where(['userId' => $id])->count();
+
+            if($checkifClientExists == 0){
+                return view('account-confirmation',['status' => 404, 'message' => "The page that you're looking for cannot be found" ]);
+            }
+
+            $getData = DB::table($table)->where(['userId' => $id])->get()->first();
 
             $expired = Carbon::parse($getData->expiredAt)->isPast();
 
@@ -157,7 +171,7 @@ class UserClientsController extends Controller
                         DB::transaction(function () use ($table,$getData) {
                             
                             DB::table($table)->where(['confirmId' => $getData->confirmId])->update(['isConfirm' => 1]);
-                            DB::table('userClients')->where(['clientId' => $getData->clientId])->update(['status' => 1]);
+                            DB::table('users')->where(['userId' => $getData->userId])->update(['status' => 1]);
 
                         });
 
@@ -190,21 +204,21 @@ class UserClientsController extends Controller
 
         $id = $credentials['id'];
     
-        $checkIdifExist = DB::table("userClients")->where(['clientId' => $id])->count();
+        $checkIdifExist = DB::table("users")->where(['userId' => $id])->count();
 
         if($checkIdifExist > 0){
             
-            $checkifAlreadyConfirm = DB::table('userClientConfirmation')->where(['clientId' => $id, 'isConfirm' => 1])->count();
+            $checkifAlreadyConfirm = DB::table('userConfirmation')->where(['userId' => $id, 'isConfirm' => 1])->count();
 
             if($checkifAlreadyConfirm == 0){
 
-                $getUser = DB::table("userClients")->where(['clientId' => $id])->get()->first();
+                $getUser = DB::table("users")->where(['userId' => $id])->get()->first();
 
                 $createActivationCode = $this->createActivationCode($getUser->email,$id);
 
                 $exp = Carbon::now()->addDay();
 
-                DB::table('userClientConfirmation')->where(['clientId' => $id])->update(['token' => $createActivationCode, 'expiredAt' => $exp]);
+                DB::table('userConfirmation')->where(['userId' => $id])->update(['token' => $createActivationCode, 'expiredAt' => $exp]);
 
                 $this->sendMail($getUser->email,$this->token);
 

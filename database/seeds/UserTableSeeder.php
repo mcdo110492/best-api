@@ -15,11 +15,13 @@ class UserTableSeeder extends Seeder
      */
     public function run()
     {
-        DB::table('userAdmins')->insert([
+        DB::table('users')->insert([
             'fullName' => "IPM Super Admin",
             'email' => "admin@gmail.com",
             'password' => Hash::make("admin"),
             'role'  => 1,
+            'status' => 1,
+            "contactNumber" => 00000000000,
             'created_at' => Carbon::now(),
             'updated_at' => Carbon::now()
         ]);
