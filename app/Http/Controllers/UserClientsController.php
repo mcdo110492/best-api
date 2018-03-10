@@ -128,7 +128,7 @@ class UserClientsController extends Controller
         $this->sendMail($credentials['email'],$this->token);
     
         
-        return response()->json(['status' => 200, 'message' => "Register Successfully.", 'token']);
+        return response()->json(['status' => 200, 'message' => "Register Successfully."]);
 
     }
 
@@ -202,7 +202,9 @@ class UserClientsController extends Controller
 
                 $createActivationCode = $this->createActivationCode($getUser->email,$id);
 
-                DB::table('userClientConfirmation')->where(['clientId' => $id])->update(['token' => $createActivationCode]);
+                $exp = Carbon::now()->addDay();
+
+                DB::table('userClientConfirmation')->where(['clientId' => $id])->update(['token' => $createActivationCode, 'expiredAt' => $exp]);
 
                 $this->sendMail($getUser->email,$this->token);
 
