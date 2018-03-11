@@ -13,15 +13,25 @@ class Inquiry extends Model
     protected $fillable = [
         "userId",
         "status",
+        "dateInquire",
         "dateConfirmed",
         "adminId",
         "remarks"
     ];
 
 
-    public function getInquiryIdAttribute($value){
 
-        $zeroFill = 0000000000;
-        return ($zeroFill + $value);
+    public function details(){
+
+        return $this->hasOne('App\InquiryDetails','inquiryId');
+
     }
+
+    public function quotations() {
+
+        return $this->hasMany('App\Quotation','inquiryId');
+
+    }
+
+
 }

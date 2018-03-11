@@ -84,7 +84,7 @@
                     <h1>{{ $message }}</h1>
                     @elseif ($status == 401)
                     <h1>{{ $message }}</h1>
-                    <p>Click to request another activation code. <a href="http://127.0.0.1:8000/activation/resend?id={{ $id }}">Click Here</a> </p>
+                    <p>Click to request another activation code. <a href="http://127.0.0.1:8000/activation/resend?email={{ $email }}">Click Here</a> </p>
                     @endif
                 </div>
             </div>

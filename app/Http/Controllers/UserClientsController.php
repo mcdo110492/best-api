@@ -20,8 +20,6 @@ class UserClientsController extends Controller
 
     private $table;
 
-    public $token;
-
     public function __construct(){
 
         $this->table = "users";
@@ -175,7 +173,7 @@ class UserClientsController extends Controller
 
                         });
 
-                        return view('account-confirmation',['status' => 200, 'message' => "You' re account has been successfully activated.", 'id' => $id]);
+                        return view('account-confirmation',['status' => 200, 'message' => "You' re account has been successfully activated."]);
                        
                     }
                 }
@@ -184,7 +182,7 @@ class UserClientsController extends Controller
 
             }
 
-            return view('account-confirmation',['status' => 401, 'message' => "Sorry. This activation code is expired"]);
+            return view('account-confirmation',['status' => 401, 'message' => "Sorry. This activation code is expired", 'email' => $getData->email]);
             
             
 
@@ -199,20 +197,22 @@ class UserClientsController extends Controller
     public function resendActivation(Request $request){
 
         $credentials = $request->validate([
-            'id'    =>  'required'
+            'email'    =>  'required'
         ]);
 
-        $id = $credentials['id'];
+        $email = $credentials['email'];
     
-        $checkIdifExist = DB::table("users")->where(['userId' => $id])->count();
+        $checkEmailifExist = DB::table("users")->where(['email' => $email])->count();
 
-        if($checkIdifExist > 0){
+        if($checkEmailifExist > 0){
+
+            $getUser = DB::table("users")->where(['email' => $email])->get()->first();
+
+            $id = $getUser->userId;
             
             $checkifAlreadyConfirm = DB::table('userConfirmation')->where(['userId' => $id, 'isConfirm' => 1])->count();
 
             if($checkifAlreadyConfirm == 0){
-
-                $getUser = DB::table("users")->where(['userId' => $id])->get()->first();
 
                 $createActivationCode = $this->createActivationCode($getUser->email,$id);
 
@@ -258,6 +258,69 @@ class UserClientsController extends Controller
 
         return $claims['hash'];
 
+    }
+
+    public function uploadValidId(Request $request){
+
+        $credentials = $request->validate([
+            "validId"   =>  "mimes:jpeg,jpg|max:5000"
+        ]);
+
+        $token = JWTAuth::parseToken()->authenticate();
+        
+        $userId = $token->userId;
+
+        $where = ['userId' => $userId];
+        $table = "userValidId";
+
+        $file = $request->file("validId");
+
+        $path = $request->quotation->store("validIDs");
+
+        $data = ['validIdPath' => $path];
+
+        $checkifAlreadyHaveId = DB::table($table)->where($where)->count();
+        //if has a record update the existing instead otherwise create new record
+        if($checkifAlreadyHaveId > 0){
+            DB::table($table)->where($where)->update($data);
+        }
+        else{
+           $data = ['validIdPath' => $path, 'userId' => $userId];
+           DB::table($table)->insert($data);
+        }
+        
+        return response()->json(['status' => 200, 'message' => "ID has been uploaded successfully."]);
+    }
+
+
+    public function changeAddress(Request $request){
+
+        $credentials = $request->validate([
+            'street'    =>  "required",
+            "city"      =>  "required",
+            "province"  =>  "required"
+        ]);
+        
+        $token = JWTAuth::parseToken()->authenticate();
+        
+        $userId = $token->userId;
+
+        $table = "userAddress";
+        $where = ['userId' => $userId];
+
+        $data = ['street' => $credentials['street'], 'city' => $credentials['city'], 'province' => $credentials['province']];
+
+        $checkifAddressExists = DB::table($table)->where($where)->count();
+        //Check if the user has already a record update instead otherwise create a new record
+        if($checkifAddressExists > 0){
+            DB::table($table)->where($where)->update($data);
+        }
+        else{
+            $data = ['street' => $credentials['street'], 'city' => $credentials['city'], 'province' => $credentials['province'], 'userId' => $userId];
+            DB::table($table)->insert($data);
+        }
+
+        return response()->json(['status' => 200, 'message' => "Address has been saved."]);
     }
 
 

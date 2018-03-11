@@ -67,6 +67,7 @@ class ComposerStaticInite6f50430e400747ad4913bf61f1a97a3
         ),
         'P' => 
         array (
+            'Pusher\\' => 7,
             'Psy\\' => 4,
             'Psr\\SimpleCache\\' => 16,
             'Psr\\Log\\' => 8,
@@ -228,6 +229,10 @@ class ComposerStaticInite6f50430e400747ad4913bf61f1a97a3
         array (
             0 => __DIR__ . '/..' . '/ramsey/uuid/src',
         ),
+        'Pusher\\' => 
+        array (
+            0 => __DIR__ . '/..' . '/pusher/pusher-php-server/src',
+        ),
         'Psy\\' => 
         array (
             0 => __DIR__ . '/..' . '/psy/psysh/src/Psy',
@@ -375,6 +380,8 @@ class ComposerStaticInite6f50430e400747ad4913bf61f1a97a3
 
     public static $classMap = array (
         'App\\Console\\Kernel' => __DIR__ . '/../..' . '/app/Console/Kernel.php',
+        'App\\Events\\InquiryClient' => __DIR__ . '/../..' . '/app/Events/InquiryClient.php',
+        'App\\Events\\InquiryEvent' => __DIR__ . '/../..' . '/app/Events/InquiryEvent.php',
         'App\\Exceptions\\Handler' => __DIR__ . '/../..' . '/app/Exceptions/Handler.php',
         'App\\Http\\Controllers\\Auth\\ForgotPasswordController' => __DIR__ . '/../..' . '/app/Http/Controllers/Auth/ForgotPasswordController.php',
         'App\\Http\\Controllers\\Auth\\LoginController' => __DIR__ . '/../..' . '/app/Http/Controllers/Auth/LoginController.php',
@@ -401,11 +408,9 @@ class ComposerStaticInite6f50430e400747ad4913bf61f1a97a3
         'App\\Providers\\RouteServiceProvider' => __DIR__ . '/../..' . '/app/Providers/RouteServiceProvider.php',
         'App\\Quotaion' => __DIR__ . '/../..' . '/app/Quotaion.php',
         'App\\User' => __DIR__ . '/../..' . '/app/User.php',
-        'App\\UserAdmins' => __DIR__ . '/../..' . '/app/UserAdmins.php',
-        'App\\UserClientAddress' => __DIR__ . '/../..' . '/app/UserClientAddress.php',
-        'App\\UserClientConfirmation' => __DIR__ . '/../..' . '/app/UserClientConfirmation.php',
-        'App\\UserClientValidId' => __DIR__ . '/../..' . '/app/UserClientValidId.php',
-        'App\\UserClients' => __DIR__ . '/../..' . '/app/UserClients.php',
+        'App\\UserAddress' => __DIR__ . '/../..' . '/app/UserAddress.php',
+        'App\\UserConfirmation' => __DIR__ . '/../..' . '/app/UserConfirmation.php',
+        'App\\UserValidId' => __DIR__ . '/../..' . '/app/UserValidId.php',
         'ArithmeticError' => __DIR__ . '/..' . '/symfony/polyfill-php70/Resources/stubs/ArithmeticError.php',
         'Asm89\\Stack\\Cors' => __DIR__ . '/..' . '/asm89/stack-cors/src/Asm89/Stack/Cors.php',
         'Asm89\\Stack\\CorsService' => __DIR__ . '/..' . '/asm89/stack-cors/src/Asm89/Stack/CorsService.php',
@@ -3002,6 +3007,9 @@ class ComposerStaticInite6f50430e400747ad4913bf61f1a97a3
         'Psy\\VersionUpdater\\GitHubChecker' => __DIR__ . '/..' . '/psy/psysh/src/Psy/VersionUpdater/GitHubChecker.php',
         'Psy\\VersionUpdater\\IntervalChecker' => __DIR__ . '/..' . '/psy/psysh/src/Psy/VersionUpdater/IntervalChecker.php',
         'Psy\\VersionUpdater\\NoopChecker' => __DIR__ . '/..' . '/psy/psysh/src/Psy/VersionUpdater/NoopChecker.php',
+        'Pusher\\Pusher' => __DIR__ . '/..' . '/pusher/pusher-php-server/src/Pusher.php',
+        'Pusher\\PusherException' => __DIR__ . '/..' . '/pusher/pusher-php-server/src/PusherException.php',
+        'Pusher\\PusherInstance' => __DIR__ . '/..' . '/pusher/pusher-php-server/src/PusherInstance.php',
         'Ramsey\\Uuid\\BinaryUtils' => __DIR__ . '/..' . '/ramsey/uuid/src/BinaryUtils.php',
         'Ramsey\\Uuid\\Builder\\DefaultUuidBuilder' => __DIR__ . '/..' . '/ramsey/uuid/src/Builder/DefaultUuidBuilder.php',
         'Ramsey\\Uuid\\Builder\\DegradedUuidBuilder' => __DIR__ . '/..' . '/ramsey/uuid/src/Builder/DegradedUuidBuilder.php',

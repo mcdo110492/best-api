@@ -17,7 +17,8 @@ class CreateInquiryTable extends Migration
             $table->increments('inquiryId');
             $table->unsignedInteger("userId");
             $table->smallInteger("status")->default(0);
-            $table->timestamp("dateConfirmed");
+            $table->dateTime("dateInquire");
+            $table->dateTime("dateConfirmed")->nullable();
             $table->unsignedInteger("adminId")->nullable();
             $table->string('remarks',150)->nullable();
             $table->timestamps();

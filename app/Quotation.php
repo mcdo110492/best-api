@@ -4,7 +4,7 @@ namespace App;
 
 use Illuminate\Database\Eloquent\Model;
 
-class Quotaion extends Model
+class Quotation extends Model
 {
     protected $table = "quotation";
     
@@ -13,6 +13,7 @@ class Quotaion extends Model
     protected $fillable = [
         "inquiryId",
         "quotationFile",
+        "dateQuotation",
         "status",
         "dateStatus",
         "remarks"

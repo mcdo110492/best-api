@@ -12,6 +12,7 @@ class InquiryDetails extends Model
 
     protected $fillable = [
         "inquiryId",
+        "clientNumber",
         "email",
         "fullName",
         "contactNumber",

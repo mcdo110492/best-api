@@ -18,7 +18,7 @@ class CreateUserConfirmationTable extends Migration
             $table->unsignedInteger("userId");
             $table->string('token',200);
             $table->smallInteger("isConfirm")->dafault(0);
-            $table->timestamp("expiredAt");
+            $table->dateTime("expiredAt");
             $table->timestamps();
         });
     }

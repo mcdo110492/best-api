@@ -17,8 +17,9 @@ class CreateQuotationTable extends Migration
             $table->increments('quotationId');
             $table->unsignedInteger("inquiryId");
             $table->string("quotationFile",200);
+            $table->dateTime("dateQuotation");
             $table->smallInteger("status")->default(0);
-            $table->timestamp("dateStatus");
+            $table->dateTime("dateStatus")->nullable();
             $table->timestamps();
         });
     }

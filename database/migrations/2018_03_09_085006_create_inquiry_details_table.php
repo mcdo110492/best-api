@@ -16,6 +16,7 @@ class CreateInquiryDetailsTable extends Migration
         Schema::create('inquiryDetails', function (Blueprint $table) {
             $table->increments('inquiryDetailsId');
             $table->unsignedInteger("inquiryId");
+            $table->string("clientNumber",10);
             $table->string('email',50);
             $table->string("fullName",50);
             $table->string("contactNumber",20);
