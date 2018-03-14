@@ -74,7 +74,8 @@
 
                 <div class="links">
                     <h1>Welcome to Basic Environmental Systems & Technologies Inc.</h1>
-                    <p>To activate your account please <a href="http://127.0.0.1:8000/verify/account?token={{ $token }}">Click Here to Activate your account</a>. This link will expires after 24 hours. Thank you </p>
+                    <!-- <p>To activate your account please <a href="http://127.0.0.1:8000/verify/account?token={{ $token }}">Click Here to Activate your account</a>. This link will expires after 24 hours. Thank you </p> -->
+                    <p>To activate your account please <a href="http://www.best.staticscript.com/api/public/verify/account?token={{ $token }}">Click Here to Activate your account</a>. This link will expires after 24 hours. Thank you </p>
                 </div>
             </div>
         </div>
