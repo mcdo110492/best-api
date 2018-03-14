@@ -69,7 +69,7 @@
 
             <div class="content">
                 <div class="title m-b-md">
-                    <img src="{{ asset('storage/best-logo.png') }}" alt="">
+                    <img src="http://www.best.staticscript.com/api/storage/app/public/best-logo.png" alt="">
                 </div>
 
                 <div class="links">
