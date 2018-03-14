@@ -84,9 +84,12 @@ class InquiryController extends Controller
 
             event(new InquiryEvent($inquiryId,$user->fullName,$user->email,$inquiryDate,$inquireDetailsData['clientNumber']));
 
+            
         });
-       
+
         return response()->json(['status' => 200, 'message' => "Inquiry Sent."]);
+
+       
         
     }
 
@@ -207,17 +210,24 @@ class InquiryController extends Controller
 
         $inquiryId = $credentials['inquiryId'];
 
+        $q = Inquiry::findOrFail($inquiryId);
+
+        $checkIfAlreadyProcess = Inquiry::where(['inquiryId' => $inquiryId,'adminId' => NULL])->count();
+
+        if($checkIfAlreadyProcess == 0){
+            return response()->json(['status' => 402, 'message' => "Already been processed."]);
+        }
+
         $data = [
             'adminId'       =>  $adminId,
             'dateConfirmed' =>  Carbon::now(),
             'status'        =>  1
         ];
 
-        $q = Inquiry::findOrFail($inquiryId);
 
         $q->update($data);
 
-        event(new InquiryClient($credentials['clientId'],$inquiryId,$adminId));
+        event(new InquiryClient($credentials['clientId'],$inquiryId,1));
 
         return response()->json(['status' => 200, 'message' => "Inquiry Accepted."]);
     }
@@ -242,6 +252,14 @@ class InquiryController extends Controller
 
         $inquiryId = $credentials['inquiryId'];
 
+        $q = Inquiry::findOrFail($inquiryId);
+
+        $checkIfAlreadyProcess = Inquiry::where(['inquiryId' => $inquiryId,'adminId' => NULL])->count();
+
+        if($checkIfAlreadyProcess == 0){
+            return response()->json(['status' => 402, 'message' => "Already been processed."]);
+        }
+
         $data = [
             'adminId'       =>  $adminId,
             'dateConfirmed' =>  Carbon::now(),
@@ -249,13 +267,79 @@ class InquiryController extends Controller
             'remarks'       =>  $credentials['remarks']
         ];
 
-        $q = Inquiry::findOrFail($inquiryId);
-
         $q->update($data);
 
-        event(new InquiryClient($credentials['clientId'],$inquiryId,$adminId));
+        event(new InquiryClient($credentials['clientId'],$inquiryId,2));
 
         return response()->json(['status' => 200, 'message' => "Inquiry Rejected."]);
+    }
+
+    /**
+     * Get Method to get the inquiry
+     * Pending
+     * Active
+     * Rejected
+     * Sales
+     */
+
+     public function getInquirySales($status){
+
+        $userId = $this->user->userId;
+        
+    
+
+        if($status == 0){
+            $q = Inquiry::with('details')->where(['status' => 0]);
+            $get = $q->get();
+            $count = $q->count();
+
+            return response()->json(['count' => $count, 'data' => $get]);
+
+        }
+
+        $where = ['status' => $status, 'adminId' => $userId];
+        $q = Inquiry::with("details")->where($where);
+        $get = $q->get();
+        $count = $q->count();
+
+        return response()->json(['count' => $count, 'data' => $get]);
+
+     }
+
+    /**
+    * Get Method to get the inquiry
+    * Pending
+    * 
+    */
+    public function getInquiryClientPeding(){
+
+        $userId = $this->user->userId;
+
+        $where = ['status' => 0, 'userId' => $userId];
+        $q = Inquiry::with("details")->where($where);
+        $get = $q->get();
+        $count = $q->count();
+
+        return response()->json(['count' => $count, 'data' => $get]);
+
+    }
+
+    /**
+    * Get Method to get the inquiry
+    * On Process
+    * 
+    */
+    public function getInquiryClientOnProcess(){
+
+        $userId = $this->user->userId;
+
+        $where = ['status' => 1, 'userId' => $userId];
+        $q = Inquiry::with(['details','admin'])->where($where);
+        $get = $q->get();
+        $count = $q->count();
+
+        return response()->json(['count' => $count, 'data' => $get]);
+
     }
 
 }

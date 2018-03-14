@@ -116,4 +116,6 @@ class QuotaionController extends Controller
         return response()->json(['status' => 200, 'message' => "Quotation has been accepted."]);
 
     }
+
+    /** */
 }

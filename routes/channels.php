@@ -11,6 +11,20 @@
 |
 */
 
-Broadcast::channel('App.User.{id}', function ($user, $id) {
-    return (int) $user->id === (int) $id;
+use Tymon\JWTAuth\Facades\JWTAuth;
+use Illuminate\Support\Facades\DB; 
+
+
+// Private Channel for Requesting an SOS
+Broadcast::channel('inquiry-client.{clientId}', function(){
+
+    $token =  $token = JWTAuth::parseToken()->authenticate();
+
+    $role = $token->role;
+
+    if($role == 3){
+        return true;
+    }
+
+    return false;
 });

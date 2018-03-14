@@ -47,7 +47,7 @@ class UserAdminsController extends Controller
                     $role = $getUser->role;
                     if($role == 3){
 
-                        return response()->json(['status' => 403, "message" => "You' re not authorized."]);
+                        return response()->json(['status' => 404, "message" => "You' re not authorized."]);
 
                     }
 
@@ -62,7 +62,7 @@ class UserAdminsController extends Controller
                             'userId'            =>  $getUser->userId,
                             "email"             =>  $getUser->email,
                             "role"              =>  $getUser->role,
-                            "refreshToken"      =>  $getUser->refreshToken,
+                            "refreshToken"      =>  str_random(),
                             "profilePicture"    =>  $getUser->profilePicture,
                             "contactNumber"     =>  $getUser->contactNumber
                         ];
@@ -72,6 +72,8 @@ class UserAdminsController extends Controller
                         $user = (object) $userData;
 
                         $token = JWTAuth::fromUser($user,$customClaims);
+
+                        DB::table($table)->where($where)->update(['refreshToken' => $userData['refreshToken']]);
 
                         return response()->json(['status' => 200, 'token' => $token, 'user' => $userData, 'message' => "Valid"]);
 

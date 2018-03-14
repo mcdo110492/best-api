@@ -11,6 +11,19 @@
 |
 */
 
+//Route to verify if the token are still valid
+Route::group(['prefix' => 'token','middleware' => ['jwt.auth']], function () {
+    
+    Route::get('verify', function () {
+        
+        return response()->json(['status' => 200, 'message' => "Token is valid."]);
+    });
+
+});
+
+
+
+
 //Route Authenticate Admins
 Route::post("authenticate/admin","UserAdminsController@authenticate");
 
@@ -24,33 +37,77 @@ Route::get("verify/account","UserClientsController@verifyActivation");
 
 Route::get("activation/resend","UserClientsController@resendActivation");
 
+Route::post("activation/resend","UserClientsController@resendActivationMobile");
+
 //Route Upload Valid ID for All Users
 
 Route::post("users/upload/valid/id","UserClientsController@uploadValidId");
 
 Route::post("users/change/address","UserClientsController@changeAddress");
 
+//Route Sales and Admin
+Route::group(['prefix' => 'sales','middleware' => 'jwt.auth'], function () {
 
-//Inquiry Route Clients
-Route::post("inquire","InquiryController@inquire");
+    //Route for getting the pending, active and rejected inquiry of clients
+    Route::group(['prefix' => 'inquire'], function () {
 
-//Inquiry Route Sales
-Route::get("inquiry/pending","InquiryController@getPending");
+        Route::get("pending","InquiryController@getPending");
 
-Route::get("inquiry/active","InquiryController@getActive");
+        Route::get("active","InquiryController@getActive");
 
-Route::get("inquiry/rejected","InquiryController@getRejected");
+        Route::get("rejected","InquiryController@getRejected");
+        
+    });
 
-//Inquiry Routes to accept and reject the inquiry Sales
-Route::post('inquiry/accept',"InquiryController@acceptInquiry");
+    //Route for accepting and rejecting client inquiry
+    Route::group(['prefix' => 'inquiry'], function () {
 
-Route::post('inquiry/reject',"InquiryController@rejectInquiry");
+        Route::post("rejecting","InquiryController@rejectInquiry");
 
-//Quotation Routes Sales
-Route::post('quotations/upload',"QuotaionController@uploadQuotation");
+        Route::post("accepting","InquiryController@acceptInquiry");
+
+        Route::get("sales/{status}","InquiryController@getInquirySales");
+    });
+
+    //Route for uploading the created quotation for the client pdf only
+    Route::group(['prefix' => 'quotations'], function () {
+        
+        Route::post('upload',"QuotaionController@uploadQuotation");
+    });
+    
+});
+
+//Routes for Cllients
+Route::group(['prefix' => 'clients','middleware' => 'jwt.auth'], function () {
+
+    //Route for inquire and getting the pending and onProcess inquiry for client
+    Route::group(['prefix' => 'inquiry'], function () {
+
+        Route::get("inquire","InquiryController@inquire");
+
+        Route::get("pending","InquiryController@getInquiryClientPeding");
+
+        Route::get("onProcess","InquiryController@getInquiryClientOnProcess");
+        
+    });
+
+    Route::group(['prefix' => 'quotations'], function () {
+
+        Route::post("accepting","QuotaionController@acceptQuotation");
+
+        Route::post("rejecting","QuotaionController@rejectQuotation");
+        
+    });
+
+    
+});
 
 
-//Quotation Routes Clients
-Route::post("quotations/accept","QuotaionController@acceptQuotation");
 
-Route::post("quotations/reject","QuotaionController@rejectQuotation");
+
+
+
+
+
+
+

@@ -57,7 +57,7 @@ class UserClientsController extends Controller
                             'fullName'          =>  $getUser->fullName,
                             'userId'            =>  $getUser->userId,
                             "email"             =>  $getUser->email,
-                            "refreshToken"      =>  $getUser->refreshToken,
+                            "refreshToken"      =>  str_random(),
                             "profilePicture"    =>  $getUser->profilePicture,
                             "contactNumber"     =>  $getUser->contactNumber
                         ];
@@ -67,6 +67,8 @@ class UserClientsController extends Controller
                         $customClaims = ['userId' => $getUser->userId, 'role' => 3, 'email' => $getUser->email];
 
                         $token = JWTAuth::fromUser($user,$customClaims);
+
+                        DB::table($table)->where($where)->update(['refreshToken' => $userData['refreshToken']]);
 
                         return response()->json(['status' => 200, 'token' => $token, 'user' => $userData, 'message' => "Valid"]);
 
@@ -98,7 +100,7 @@ class UserClientsController extends Controller
         $table = $this->table;
 
         $credentials = $request->validate([
-            'email'         =>  'required|unique:'.$table.',email',
+            'email'         =>  'required|email|unique:'.$table.',email',
             'password'      =>  'required',
             'fullName'      =>  'required',
             'contactNumber' =>  'required'
@@ -236,6 +238,51 @@ class UserClientsController extends Controller
         $response = ['status' => 404, "message" => "404 not found. The page you' re looking for cannot be found."];
 
         return view('confirmation-resend',$response);
+
+    }
+
+    public function resendActivationMobile(Request $request){
+
+        $credentials = $request->validate([
+            'email'    =>  'required'
+        ]);
+
+        $email = $credentials['email'];
+    
+        $checkEmailifExist = DB::table("users")->where(['email' => $email])->count();
+
+        if($checkEmailifExist > 0){
+
+            $getUser = DB::table("users")->where(['email' => $email])->get()->first();
+
+            $id = $getUser->userId;
+            
+            $checkifAlreadyConfirm = DB::table('userConfirmation')->where(['userId' => $id, 'isConfirm' => 1])->count();
+
+            if($checkifAlreadyConfirm == 0){
+
+                $createActivationCode = $this->createActivationCode($getUser->email,$id);
+
+                $exp = Carbon::now()->addDay();
+
+                DB::table('userConfirmation')->where(['userId' => $id])->update(['token' => $createActivationCode, 'expiredAt' => $exp]);
+
+                $this->sendMail($getUser->email,$this->token);
+
+                $response = ['status' => 200, 'message' => "Activation Code has been sent to your email. Please wait for few minutes. Sometimes it will take a while to receive the email. Thank You"];
+
+               return response()->json($response);
+
+            }
+            
+            $response = ['status' => 403, 'message' => "Account already activated."];
+
+            return response()->json($response);
+        }
+
+        $response = ['status' => 404, "message" => "Email does not exist."];
+
+        return response()->json($response);
 
     }
 

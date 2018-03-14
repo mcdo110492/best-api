@@ -11,6 +11,8 @@ use Illuminate\Broadcasting\InteractsWithSockets;
 use Illuminate\Contracts\Broadcasting\ShouldBroadcast;
 use Illuminate\Support\Facades\DB;
 
+use App\Inquiry;
+
 class InquiryClient implements ShouldBroadcast
 {
     use Dispatchable, InteractsWithSockets, SerializesModels;
@@ -19,7 +21,7 @@ class InquiryClient implements ShouldBroadcast
 
     public $inquiryId;
 
-    public $adminId;
+    public $status;
 
 
     /**
@@ -27,11 +29,11 @@ class InquiryClient implements ShouldBroadcast
      *
      * @return void
      */
-    public function __construct($clientId,$inquiryId,$adminId)
+    public function __construct($clientId,$inquiryId,$status)
     {
         $this->clientId = $clientId;
         $this->inquiryId = $inquiryId;
-        $this->adminId = $adminId;
+        $this->status = $status;
     }
 
     /**
@@ -50,12 +52,11 @@ class InquiryClient implements ShouldBroadcast
      * @return array
      */
     public function broadcastWith() {
+        $where = ['inquiryId' => $this->inquiryId];
+        $q = Inquiry::with(['details','admin'])->where($where);
+        $get = $q->get()->first();
 
-        $getAdmin = DB::table('users')->where(['userId' => $this->adminId])->get()->first();
-
-        $getInquiry = DB::table('inquiry')->where(['inquiryId' => $this->inquiryId])->get();
-
-        return ['adminName' => $getAdmin->fullName, 'inquiry' => $getInquiry];
+        return ['inquiry' => $get, 'status' => $this->status];
         
     }
 }

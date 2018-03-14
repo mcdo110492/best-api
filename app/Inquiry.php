@@ -4,6 +4,8 @@ namespace App;
 
 use Illuminate\Database\Eloquent\Model;
 
+use Carbon\Carbon;
+
 class Inquiry extends Model
 {
     protected $table = "inquiry";
@@ -30,6 +32,12 @@ class Inquiry extends Model
     public function quotations() {
 
         return $this->hasMany('App\Quotation','inquiryId');
+
+    }
+
+    public function admin() {
+
+        return $this->hasOne('App\User','userId','adminId');
 
     }
 
