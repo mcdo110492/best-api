@@ -31,7 +31,7 @@ class Inquiry extends Model
 
     public function quotations() {
 
-        return $this->hasMany('App\Quotation','inquiryId');
+        return $this->hasOne('App\Quotation','inquiryId');
 
     }
 

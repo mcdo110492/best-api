@@ -72,7 +72,7 @@ Route::group(['prefix' => 'sales','middleware' => 'jwt.auth'], function () {
     //Route for uploading the created quotation for the client pdf only
     Route::group(['prefix' => 'quotations'], function () {
         
-        Route::post('upload',"QuotaionController@uploadQuotation");
+        Route::post('upload',"QuotationController@uploadQuotation");
     });
     
 });
@@ -93,9 +93,13 @@ Route::group(['prefix' => 'clients','middleware' => 'jwt.auth'], function () {
 
     Route::group(['prefix' => 'quotations'], function () {
 
-        Route::post("accepting","QuotaionController@acceptQuotation");
+        Route::get("pending","QuotationController@getClientQuotation");
 
-        Route::post("rejecting","QuotaionController@rejectQuotation");
+        Route::post("accepting","QuotationController@acceptQuotation");
+
+        Route::post("rejecting","QuotationController@rejectQuotation");
+
+        Route::post("upload","QuotationController@uploadClientQuotation");
         
     });
 
